@@ -115,7 +115,10 @@ const handleLogin = async () => {
 
   loading.value = true
   try {
-    const res = await authApi.login(form)
+    const res = await authApi.login({
+      username: form.username.trim(),
+      password: form.password
+    })
     if (res.code === 200) {
       authStore.setAuth(res.data.token, res.data.username)
       toastStore.success('登录成功')

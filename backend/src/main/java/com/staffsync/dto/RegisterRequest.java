@@ -17,4 +17,8 @@ public class RegisterRequest {
     @NotBlank(message = "密码不能为空")
     @Size(min = 6, max = 20, message = "密码长度应在6-20之间")
     private String password;
+
+    public void setUsername(String username) {
+        this.username = username != null ? username.trim() : null;
+    }
 }
