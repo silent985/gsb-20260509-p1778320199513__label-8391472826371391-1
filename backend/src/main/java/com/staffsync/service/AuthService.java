@@ -28,14 +28,21 @@ public class AuthService {
      * 用户注册
      */
     public Result<Void> register(String username, String password) {
-        // 检查用户名是否已存在
+        username = username.trim();
+
+        if (username.length() < 3 || username.length() > 20) {
+            return Result.error("用户名长度应在3-20之间");
+        }
+        if (password.length() < 6 || password.length() > 20) {
+            return Result.error("密码长度应在6-20之间");
+        }
+
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(User::getUsername, username);
         if (userMapper.selectCount(wrapper) > 0) {
             return Result.error("用户名已存在");
         }
 
-        // 创建用户
         User user = new User();
         user.setUsername(username);
         user.setPassword(encryptPassword(password));
@@ -49,7 +56,8 @@ public class AuthService {
      * 用户登录
      */
     public Result<Map<String, Object>> login(String username, String password) {
-        // 查找用户
+        username = username.trim();
+        
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(User::getUsername, username);
         User user = userMapper.selectOne(wrapper);

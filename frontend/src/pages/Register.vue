@@ -118,8 +118,19 @@ const form = reactive({
 const handleRegister = async () => {
   if (loading.value) return
 
-  // 验证密码
-  if (form.password !== form.confirmPassword) {
+  const username = form.username.trim()
+  const password = form.password
+
+  if (username.length < 3 || username.length > 20) {
+    toastStore.error('用户名长度应在3-20之间')
+    return
+  }
+  if (password.length < 6 || password.length > 20) {
+    toastStore.error('密码长度应在6-20之间')
+    return
+  }
+
+  if (password !== form.confirmPassword) {
     toastStore.error('两次密码输入不一致')
     return
   }
@@ -127,8 +138,8 @@ const handleRegister = async () => {
   loading.value = true
   try {
     const res = await authApi.register({
-      username: form.username,
-      password: form.password
+      username,
+      password
     })
     if (res.code === 200) {
       toastStore.success('注册成功，请登录')
