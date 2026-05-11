@@ -113,9 +113,15 @@ const form = reactive({
 const handleLogin = async () => {
   if (loading.value) return
 
+  const username = form.username.trim()
+  const password = form.password
+
   loading.value = true
   try {
-    const res = await authApi.login(form)
+    const res = await authApi.login({
+      username,
+      password
+    })
     if (res.code === 200) {
       authStore.setAuth(res.data.token, res.data.username)
       toastStore.success('登录成功')
