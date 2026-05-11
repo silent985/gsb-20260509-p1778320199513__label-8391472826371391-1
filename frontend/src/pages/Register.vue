@@ -127,7 +127,7 @@ const handleRegister = async () => {
   loading.value = true
   try {
     const res = await authApi.register({
-      username: form.username,
+      username: form.username.trim(),
       password: form.password
     })
     if (res.code === 200) {
