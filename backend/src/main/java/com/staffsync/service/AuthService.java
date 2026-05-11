@@ -1,6 +1,5 @@
 package com.staffsync.service;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.staffsync.common.Result;
 import com.staffsync.mapper.UserMapper;
 import com.staffsync.model.User;
@@ -12,7 +11,9 @@ import org.springframework.util.DigestUtils;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 认证服务
@@ -28,10 +29,9 @@ public class AuthService {
      * 用户注册
      */
     public Result<Void> register(String username, String password) {
-        // 检查用户名是否已存在
-        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(User::getUsername, username);
-        if (userMapper.selectCount(wrapper) > 0) {
+        username = username.trim();
+        // 检查用户名是否已存在（忽略前后空格）
+        if (userMapper.countByUsernameTrim(username) > 0) {
             return Result.error("用户名已存在");
         }
 
@@ -49,14 +49,23 @@ public class AuthService {
      * 用户登录
      */
     public Result<Map<String, Object>> login(String username, String password) {
-        // 查找用户
-        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(User::getUsername, username);
-        User user = userMapper.selectOne(wrapper);
+        username = username.trim();
+        // 查找所有匹配的用户（忽略前后空格）
+        List<User> users = userMapper.selectListByUsernameTrim(username);
 
-        if (user == null) {
+        if (users.isEmpty()) {
             return Result.error("用户名或密码错误");
         }
+
+        // 如果有多个只差前后空格的账号，明确拦截提示
+        if (users.size() > 1) {
+            String duplicateUsernames = users.stream()
+                    .map(u -> "\"" + u.getUsername() + "\"")
+                    .collect(Collectors.joining(", "));
+            return Result.error("检测到多个用户名只差前后空格的账号：" + duplicateUsernames + "，请联系管理员处理");
+        }
+
+        User user = users.get(0);
 
         // 验证密码
         if (!user.getPassword().equals(encryptPassword(password))) {

@@ -25,7 +25,7 @@ public class AuthController {
      */
     @PostMapping("/register")
     public Result<Void> register(@Valid @RequestBody RegisterRequest request) {
-        return authService.register(request.getUsername(), request.getPassword());
+        return authService.register(request.getUsername().trim(), request.getPassword());
     }
 
     /**
@@ -33,6 +33,6 @@ public class AuthController {
      */
     @PostMapping("/login")
     public Result<Map<String, Object>> login(@Valid @RequestBody LoginRequest request) {
-        return authService.login(request.getUsername(), request.getPassword());
+        return authService.login(request.getUsername().trim(), request.getPassword());
     }
 }
