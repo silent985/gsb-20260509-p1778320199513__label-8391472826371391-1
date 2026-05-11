@@ -1,0 +1,32 @@
+# 忽略依赖目录
+node_modules/
+.venv/
+venv/
+__pycache__/
+
+# 忽略构建产物
+dist/
+build/
+target/
+*.jar
+*.war
+
+# 忽略 IDE 文件
+.idea/
+.vscode/
+*.iml
+
+# 忽略 Git 目录
+.git/
+
+# 忽略日志
+*.log
+logs/
+
+# 忽略环境文件
+.env
+.env.local
+.env.*.local
+
+# macOS
+.DS_Store
